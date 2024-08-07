@@ -1,4 +1,3 @@
-server/sentiment140.csv
-server/vocab.pth
-server/encoded_data.pkl
-server/venv
+creating_model/sentiment140.csv
+creating_model/encoded_data.pkl
+venv
