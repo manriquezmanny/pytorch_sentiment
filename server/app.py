@@ -37,8 +37,7 @@ class SentimentCNN(nn.Module):
         return torch.sigmoid(x)
 
 # Load the vocabulary
-with open("vocab.pth", "rb") as f:
-    vocab = torch.load(f)
+vocab = torch.load("vocab.pth")
 
 # Initialize the model and load state dict
 model = SentimentCNN(vocab_size=len(vocab), embedding_dim=128, num_classes=1).to(device)
