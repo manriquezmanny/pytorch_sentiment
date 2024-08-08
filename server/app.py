@@ -42,7 +42,7 @@ with open("vocab.pth", "rb") as f:
 
 # Initialize the model and load state dict
 model = SentimentCNN(vocab_size=len(vocab), embedding_dim=128, num_classes=1).to(device)
-state_dict = torch.load("sentiment_cnn.pth", map_location=device, weights_only=True)
+state_dict = torch.load("sentiment_cnn.pth", map_location=device)
 model.load_state_dict(state_dict)
 model.eval()
 
