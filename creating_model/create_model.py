@@ -31,6 +31,15 @@ class SentimentCNN(nn.Module):
         x = self.sigmoid(x)
         return x
 
+# Function to calculate accuracy
+def calculate_accuracy(outputs, labels):
+    predicted = (outputs >= 0.5).float()
+    correct = (predicted == labels).float().sum()
+    accuracy = correct / labels.size(0)
+    return accuracy.item()
+
+print(torch.cuda.is_available())
+
 # Load preprocessed data and vocab
 data = pd.read_pickle("encoded_data.pkl")
 vocab = torch.load("vocab.pth")
@@ -85,14 +94,20 @@ for epoch in range(num_epochs):
             optimizer.zero_grad()
 
         epoch_loss += loss.item()
+        batch_accuracy = calculate_accuracy(outputs, batch_labels)
+        print(f"\rEpoch [{epoch+1}/{num_epochs}], Batch [{i//batch_size + 1}/{total_batches}], Loss: {loss.item():.4f}, Accuracy: {batch_accuracy:.4f}", end="")
 
     epoch_loss /= total_batches
+    print(f"\nEpoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}")
 
     # Validation
     model.eval()
     with torch.no_grad():
         val_outputs = model(X_val).squeeze(1)
         val_loss = criterion(val_outputs, y_val.float())
+        val_accuracy = calculate_accuracy(val_outputs, y_val)
+
+    print(f"Validation Loss: {val_loss.item():.4f}, Validation Accuracy: {val_accuracy:.4f}")
 
     if val_loss < best_val_loss - min_delta:
         best_val_loss = val_loss
@@ -115,4 +130,3 @@ for epoch in range(num_epochs):
         break
 
 print("Model training completed.")
-
