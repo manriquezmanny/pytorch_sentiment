@@ -38,7 +38,7 @@ class SentimentCNN(nn.Module):
 
 # Load the vocabulary
 with open("vocab.pth", "rb") as f:
-    vocab = torch.load(f, weights_only=True)
+    vocab = torch.load(f)
 
 # Initialize the model and load state dict
 model = SentimentCNN(vocab_size=len(vocab), embedding_dim=128, num_classes=1).to(device)
