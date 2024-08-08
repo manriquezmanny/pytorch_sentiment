@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from nltk.tokenize import word_tokenize
 import re
 from flask import Flask, request, jsonify
+from huggingface_hub import hf_hub_download
 
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -36,12 +37,13 @@ class SentimentCNN(nn.Module):
         x = self.fc2(x)
         return torch.sigmoid(x)
 
-# Load the vocabulary
-vocab = torch.load("vocab.pth")
+# Download vocab and model from Hugging Face
+repo_id = "manriquezmanny/pytorch-sentiment"
+vocab = torch.load(hf_hub_download(repo_id=repo_id, filename="vocab.pth"))
+state_dict = torch.load(hf_hub_download(repo_id=repo_id, filename="sentiment_cnn.pth"), map_location=device)
 
 # Initialize the model and load state dict
 model = SentimentCNN(vocab_size=len(vocab), embedding_dim=128, num_classes=1).to(device)
-state_dict = torch.load("sentiment_cnn.pth", map_location=device)
 model.load_state_dict(state_dict)
 model.eval()
 
@@ -55,12 +57,12 @@ def preprocess_tweets(tweet):
 
 # Encode tweets
 def text_pipeline(vocab, input_text):
-    preprocessed_text = preprocess_tweets(input_text)  # Helper function
-    tokens = word_tokenize(preprocessed_text)  # Tokenization with nltk
-    vocab_indices = [vocab.get(token, vocab['<unk>']) for token in tokens]  # Encoding text
-    vocab_indices = vocab_indices[:100]  # Ensuring list doesn't exceed 100 elements
-    tensor = torch.tensor(vocab_indices, dtype=torch.long).to(device)  # Turning indices into a tensor of type long
-    tensor = F.pad(tensor, pad=(0, 100 - tensor.size(0)), value=vocab['<pad>'])  # Padding Tensor to ensure consistent element size
+    preprocessed_text = preprocess_tweets(input_text)
+    tokens = word_tokenize(preprocessed_text)
+    vocab_indices = [vocab.get(token, vocab['<unk>']) for token in tokens]
+    vocab_indices = vocab_indices[:100]
+    tensor = torch.tensor(vocab_indices, dtype=torch.long).to(device)
+    tensor = F.pad(tensor, pad=(0, 100 - tensor.size(0)), value=vocab['<pad>'])
     return tensor.unsqueeze(0)
 
 # Define the classify function
@@ -87,3 +89,4 @@ def predict():
 # Run the app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
+
