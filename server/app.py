@@ -5,9 +5,13 @@ from nltk.tokenize import word_tokenize
 import re
 from flask import Flask, request, jsonify
 from huggingface_hub import hf_hub_download
+import nltk
 
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Nltk Download
+nltk.download('punkt')
 
 # Define the SentimentCNN class
 class SentimentCNN(nn.Module):
