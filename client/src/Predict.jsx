@@ -28,20 +28,23 @@ export default function Predict() {
         },
         body: JSON.stringify({ text: userInput }),
       }
-    )
-      .then((res) => res.json())
-      .then((res) => res);
+    ).then((res) => res.json());
 
     parseInt(prediction.prediction)
       ? setClassification("Positive Sentiment")
       : setClassification("Negative Sentiment");
 
     if (parseFloat(prediction.output) >= 0.5) {
-      setCertainty((prediction.output - 0.5) / 0.5);
+      let result = ((parseFloat(prediction.output) - 0.5) / 0.5) * 100;
+      result = (Math.round(result * 100) / 100).toFixed(2);
+      setCertainty(result);
     } else {
-      setCertainty(prediction.output / 0.5);
+      let result = ((0.5 - parseFloat(prediction.output)) / 0.5) * 100;
+      result = Math.round(result * 100) / 100;
+      setCertainty(result);
     }
   };
+  console.log(certainty);
 
   return (
     <>
@@ -95,10 +98,12 @@ export default function Predict() {
         </div>
       )}
 
-      <p style={{ fontStyle: "italic" }}>
-        AI Model feels {" " + toString(certainty * 100) + "% "}certain it
-        classified correctly!
-      </p>
+      {certainty && (
+        <p style={{ fontStyle: "italic" }}>
+          AI Model feels {" " + certainty + "% "}certain it classified
+          correctly!
+        </p>
+      )}
     </>
   );
 }
