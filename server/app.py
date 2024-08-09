@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -5,13 +6,13 @@ from nltk.tokenize import word_tokenize
 import re
 from flask import Flask, request, jsonify
 from huggingface_hub import hf_hub_download
-import nltk
 
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Nltk Download
-nltk.download('punkt')
+# Setting nltk data directory
+nltk_data_path = os.environ['NLTK_DATA'] = './nltk_data'
+os.environ['NLTK_DATA'] = nltk_data_path
 
 # Define the SentimentCNN class
 class SentimentCNN(nn.Module):
