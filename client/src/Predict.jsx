@@ -4,6 +4,7 @@ export default function Predict() {
   const [userInput, setUserInput] = useState();
   const [phrase, setPhrase] = useState();
   const [classification, setClassification] = useState();
+  const [certainty, setCertainty] = useState();
 
   const handleChange = (e) => {
     setUserInput(e.target.value);
@@ -29,11 +30,17 @@ export default function Predict() {
       }
     )
       .then((res) => res.json())
-      .then((res) => res.prediction);
+      .then((res) => res);
 
-    parseInt(prediction)
+    parseInt(prediction.prediction)
       ? setClassification("Positive Sentiment")
       : setClassification("Negative Sentiment");
+
+    if (parseFloat(prediction.output) >= 0.5) {
+      setCertainty((prediction.output - 0.5) / 0.5);
+    } else {
+      setCertainty(prediction.output / 0.5);
+    }
   };
 
   return (
@@ -87,6 +94,11 @@ export default function Predict() {
           )}
         </div>
       )}
+
+      <p style={{ fontStyle: "italic" }}>
+        AI Model feels {" " + toString(certainty * 100) + "% "}certain it
+        classified correctly!
+      </p>
     </>
   );
 }
