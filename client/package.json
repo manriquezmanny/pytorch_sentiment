@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "vite",
+    "start": "npx http-server ./dist --proxy http://localhost:$PORT/index.html? -p $PORT -a ::",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
