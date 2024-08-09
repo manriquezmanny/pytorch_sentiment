@@ -8,8 +8,6 @@ from huggingface_hub import hf_hub_download
 import nltk
 from flask_cors import CORS
 
-output_item = None
-
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -78,8 +76,7 @@ def classify_new_data(text):
     tensor = text_pipeline(vocab, text)
     with torch.no_grad():
         output = model(tensor)
-        output_item = output.item()
-    return 1 if output.item() >= 0.5 else 0
+    return output.item()
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -94,6 +91,8 @@ def predict():
     
     text = data['text']
     prediction = classify_new_data(text)
+    output_item = prediction
+    prediction = 1 if prediction >= 0.5 else 0
     return jsonify({'prediction': prediction, "output":output_item})
 
 # Run the app
