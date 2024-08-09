@@ -49,8 +49,8 @@ class SentimentCNN(nn.Module):
 
 # Download vocab and model from Hugging Face
 repo_id = "manriquezmanny/pytorch-sentiment"
-vocab = torch.load(hf_hub_download(repo_id=repo_id, filename="vocab.pth"))
-state_dict = torch.load(hf_hub_download(repo_id=repo_id, filename="sentiment_cnn.pth"), map_location=device)
+vocab = torch.load(hf_hub_download(repo_id=repo_id, filename="vocab.pth"), weights_only=True)
+state_dict = torch.load(hf_hub_download(repo_id=repo_id, filename="sentiment_cnn.pth"), weights_only=True, map_location=device)
 
 # Initialize the model and load state dict
 model = SentimentCNN(vocab_size=len(vocab), embedding_dim=128, num_classes=1).to(device)
