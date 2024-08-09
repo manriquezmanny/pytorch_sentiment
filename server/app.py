@@ -1,4 +1,4 @@
-import os
+import logging
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -80,6 +80,14 @@ def classify_new_data(text):
 
 # Initialize Flask app
 app = Flask(__name__)
+
+# Set up Flask logging
+app.logger.setLevel(logging.DEBUG)  # Change to DEBUG or INFO as needed
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+app.logger.addHandler(handler)
 
 # Define the predict route
 @app.route('/predict', methods=['POST'])
