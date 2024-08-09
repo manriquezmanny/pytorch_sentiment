@@ -2,3 +2,4 @@ creating_model/sentiment140.csv
 creating_model/encoded_data.pkl
 venv
 server/__pycache__
+client/node_modules

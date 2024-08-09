@@ -6,6 +6,8 @@ import re
 from flask import Flask, request, jsonify
 from huggingface_hub import hf_hub_download
 import nltk
+from flask_cors import CORS
+
 
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -79,6 +81,7 @@ def classify_new_data(text):
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Define the predict route
 @app.route('/predict', methods=['POST'])
