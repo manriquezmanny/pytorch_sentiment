@@ -1,15 +1,15 @@
 #root {
-  margin: 0 auto;
   text-align: center;
   width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 #predict-form {
   width: 700px;
-  height: 600px;
+  height: 50px;
   border-radius: 8px;
   background: transparent;
   margin: 16px;
@@ -22,10 +22,26 @@
   padding: 16px;
   margin: 0px;
   justify-content: center;
-  gap: 64px;
-  width: 100%;
+  gap: 32px;
+  width: 95%;
   height: 30px;
   border-bottom: solid 1px #413d3d;
+}
+
+.results {
+  border: solid 2px whitesmoke;
+  border-radius: 8px;
+  overflow-x: scroll;
+  text-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  word-wrap: break-word;
+  margin-top: 16px;
+}
+
+.results::-webkit-scrollbar {
+  display: none;
 }
 
 .navbar-links {

@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export default function Predict() {
   const [userInput, setUserInput] = useState();
+  const [phrase, setPhrase] = useState();
   const [classification, setClassification] = useState();
 
   const handleChange = (e) => {
@@ -14,6 +15,8 @@ export default function Predict() {
       alert("Please write a phrase!");
       return;
     }
+    setPhrase(userInput);
+    e.target.reset();
 
     const prediction = await fetch(
       "https://pytorchsentiment-production.up.railway.app/predict",
@@ -48,9 +51,41 @@ export default function Predict() {
       </form>
 
       {classification && (
-        <h3>
-          The phrase {userInput} is classified as:{classification}
-        </h3>
+        <div className="results">
+          <h3 style={{ textWrap: "wrap", width: "700px" }}>
+            "<span style={{ fontWeight: "bolder" }}>{phrase}</span>"<br></br>
+            <br></br> Classified as:{" "}
+            <span
+              style={{
+                color: classification == "Positive Sentiment" ? "green" : "red",
+                fontWeight: "bolder",
+              }}
+            >
+              {classification}!
+            </span>
+          </h3>
+          {classification == "Positive Sentiment" ? (
+            <p
+              style={{
+                fontSize: "100px",
+                margin: "0px",
+              }}
+              className="emoji"
+            >
+              &#128513;
+            </p>
+          ) : (
+            <p
+              style={{
+                fontSize: "100px",
+                margin: "0px",
+              }}
+              className="emoji"
+            >
+              &#128530;
+            </p>
+          )}
+        </div>
       )}
     </>
   );
