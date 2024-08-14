@@ -1,31 +1,32 @@
 import torch
-import torch.nn as nn
+import torch.nn.functional as F
+from torch.nn import Embedding, Conv1d, MaxPool1d, AdaptiveMaxPool1d, Linear, Sigmoid, Dropout, BCELoss
 import torch.optim as optim
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from huggingface_hub import HfApi, HfFolder
 
 # Define the CNN model
-class SentimentCNN(nn.Module):
+class SentimentCNN(torch.nn.Module):
     def __init__(self, vocab_size, embed_dim, num_classes):
-        super(SentimentCNN, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=0)
-        self.conv1 = nn.Conv1d(embed_dim, 128, kernel_size=3)
-        self.pool1 = nn.MaxPool1d(kernel_size=3)
-        self.conv2 = nn.Conv1d(128, 64, kernel_size=3)
-        self.global_pool = nn.AdaptiveMaxPool1d(1)
-        self.fc1 = nn.Linear(64, 64)
-        self.dropout = nn.Dropout(0.3)
-        self.fc2 = nn.Linear(64, num_classes)
-        self.sigmoid = nn.Sigmoid()
+        super().__init__()
+        self.embedding = Embedding(vocab_size, embed_dim, padding_idx=0)
+        self.conv1 = Conv1d(embed_dim, 128, kernel_size=3)
+        self.pool1 = MaxPool1d(kernel_size=3)
+        self.conv2 = Conv1d(128, 64, kernel_size=3)
+        self.global_pool = AdaptiveMaxPool1d(1)
+        self.fc1 = Linear(64, 64)
+        self.dropout = Dropout(0.3)
+        self.fc2 = Linear(64, num_classes)
+        self.sigmoid = Sigmoid()
 
     def forward(self, x):
         x = self.embedding(x).permute(0, 2, 1)
-        x = torch.relu(self.conv1(x))
+        x = F.relu(self.conv1(x))
         x = self.pool1(x)
-        x = torch.relu(self.conv2(x))
+        x = F.relu(self.conv2(x))
         x = self.global_pool(x).squeeze(2)
-        x = torch.relu(self.fc1(x))
+        x = F.relu(self.fc1(x))
         x = self.dropout(x)
         x = self.fc2(x)
         x = self.sigmoid(x)
@@ -63,7 +64,7 @@ min_delta = 0.001
 
 # Initialize model, loss function, and optimizer
 model = SentimentCNN(vocab_size, embed_dim, num_classes).to(device)
-criterion = nn.BCELoss()
+criterion = BCELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=0.001)
 
 # Initialize Hugging Face API
